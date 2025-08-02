@@ -794,6 +794,117 @@ table tr td {
   }
 
 });
+
+
+
+app.post("/extra-product-list", async (req, res) => {
+  const {
+    firstName,
+    email,
+    phone,
+    company,
+    city,
+    state,
+    productTable = [],
+    totalPrices = 0,
+  } = req.body;
+
+  const mailOptions = {
+    from: "info@pharmmaex.com",
+    to: email,
+    bcc: ["info@pharmmaex.com", "shivam.sharma@pharmmaex.com"],
+    subject: "Pharmmaex - Thanks for order.",
+    html: `
+      <!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="UTF-8" />
+          <title>Order Successful</title>
+          <style>
+            body { font-family: Arial, sans-serif; background: #f9f9f9; color: #ccc; margin: 0; padding: 0; }
+            .emailTempArea {background: #f9f9f9; padding: 20px; margin: auto;}
+            .container {font-family: Arial, sans-serif; background: #111; padding: 20px; max-width: 600px; margin: auto; color: #ccc;}
+            .header { text-align: center; background: #222; color: #fff; padding: 15px; }
+            .section-title { color: #73BF45; margin-top: 20px; font-weight: bold; }
+            .section-desc { color: #fff; }
+            .section-desc strong { color:rgb(255, 255, 255); }
+            .header h1 { color: #73BF45; }
+            .header h2, .header p { color: #fff; }
+            table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+            table, th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+            .footer { margin-top: 20px; font-size: 14px; }
+            .footer p { color: #fff; }
+            .footer a { color: #73BF45; }
+            .footer a:hover { color: #73BF45; }
+
+          </style>
+        </head>
+        <body>
+         <div class="emailTempArea">
+          <div class="container">
+            <div class="header">
+              <h1>Pharmmaex</h1>
+              <h2>EXHIBITOR REQUIREMENTS PRODUCT’S LIST</h2>
+              <p>Thank you for your recent order</p>
+            </div>
+
+            <div>
+              <p class="section-title">Exhibition Details:</p>
+              <p class="section-desc">
+                <strong>Date:</strong> 03–04 October, 2025<br/>
+                <strong>Time:</strong> 10am to 6:00pm<br/>
+                <strong>Venue:</strong> Bombay Exhibition Centre, Mumbai
+              </p>
+
+              <p class="section-title">Order Details:</p>
+              <table>
+                <tr><th>Name</th><td>${firstName}</td></tr>
+                <tr><th>Phone</th><td>${phone}</td></tr>
+                <tr><th>Email</th><td style="color: #73BF45;">${email}</td></tr>
+                <tr><th>Company</th><td>${company}</td></tr>
+              </table>
+
+              <table style="margin-top: 20px;">
+                <thead>
+                  <tr>
+                    <th style="color:#73BF45;">Product</th>
+                    <th style="color:#73BF45;">Quantity</th>
+                  </tr>
+                </thead>
+                <tbody>
+  ${Object.entries(productTable)
+    .map(([name, qty]) => `<tr><td style="color: ##fff;">${name}</td><td style="color: ##fff;">${qty}</td></tr>`)
+    .join("")}
+</tbody>
+
+              </table>
+
+              <p><strong>Total Price:</strong> ₹${totalPrices}</p>
+
+              <p class="section-title">No Refund Policy</p>
+              <p class="section-desc">All registration fees are non-refundable. No refunds for cancellations or no-shows.</p>
+
+              <div class="footer">
+                <p>Thank you,</p>
+                <p><strong>Shivam Sharma</strong><br/>Organizer<br/><a href="https://pharmmaex.com">pharmmaex.com</a></p>
+              </div>
+            </div>
+          </div>
+         </div>
+        </body>
+      </html>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    res.status(200).json({ message: "Email sent successfully!" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to send email" });
+  }
+});
+
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
