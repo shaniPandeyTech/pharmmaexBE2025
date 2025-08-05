@@ -527,7 +527,7 @@ app.post('/send-registration-mail', async (req, res) => {
 });
 
 app.post('/send-exbitor-mail',upload.single("file"), async (req, res) => {
-  const { firstName,email,phone,jobTitle,company,companyAdd,city,state,pin,website,Fascia,selectedPaymentMode,space,Sqrm,Charges,totalCharge,StallNo } = JSON.parse(req.body.jsonData);
+  const { firstName,email,phone,jobTitle,company,companyAdd,city,state,pin,website,gst,Fascia,selectedPaymentMode,space,Sqrm,Charges,totalCharge,StallNo } = JSON.parse(req.body.jsonData);
   const bodyData = JSON.parse(req.body.jsonData); // Parse the JSON string associated with the key 'jsonData'
   //console.log(bodyData); // Access the 'firstName' property from the parsed data
   
@@ -712,6 +712,10 @@ table tr td {
                               <td>${website}</td>
                           </tr>
                           <tr>
+                            <td><strong>GST:</strong></td>
+                            <td>${gst}</td>
+                        </tr>
+                          <tr>
                             <td><strong>Stall Fascia Name:</strong></td>
                             <td>${Fascia}</td>
                         </tr>
@@ -733,7 +737,7 @@ table tr td {
                 </tr>
                 <tr>
                   <td><strong>Total Charges:</strong></td>
-                  <td>${totalCharge} + 18% GST</td>
+                  <td>${totalCharge} </td>
               </tr>
               <tr>
                 <td><strong>Payment Mode:</strong></td>
