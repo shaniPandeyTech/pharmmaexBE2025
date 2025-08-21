@@ -1,38 +1,136 @@
-const express = require('express');
-const multer = require("multer");
-const nodemailer = require('nodemailer');
-const bodyParser = require('body-parser');
-// const cors = require('cors');
+import express from "express";
+import Razorpay from "razorpay";
+import crypto from "crypto";
+import cors from "cors";
+import bodyParser from "body-parser";
+import mongoose from "mongoose";
+import Payment from "./models/Payment.js";
+import multer from "multer";
+import nodemailer from "nodemailer";
+
 const app = express();
 
 const upload = multer();
 
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', 'https://pharmmaex.com');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  next();
-});
+// app.use((req, res, next) => {
+//   res.setHeader("Access-Control-Allow-Origin", "https://pharmmaex.com");
+//   res.setHeader("Access-Control-Allow-Origin", "*");
+//   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+//   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+//   res.setHeader("Access-Control-Allow-Credentials", "true");
+//   next();
+// });
 
+// ✅ Middleware
+app.use(cors());
+app.use(express.json());
 app.use(bodyParser.json());
+
+// ✅ MongoDB connection
+mongoose
+  // .connect("mongodb://127.0.0.1:27017/pharmmaex", {
+  .connect("mongodb+srv://pharmmaex:NizmLk6z8rx1l5Yx@pharmmaex.nqjap2b.mongodb.net/pharmmaex", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch((err) => console.log("MongoDB Error:", err));
+
+// ✅ Razorpay instance
+const razorpay = new Razorpay({
+  key_id: "rzp_test_R7z6dY1nMfTwQu", // replace with your key_id
+  key_secret: "ye4Q5XBW3BYXLoQVfYsR0Y5t", // replace with your key_secret
+});
 
 // Configure nodemailer transporter
 let transporter = nodemailer.createTransport({
-    host: "smtp.zoho.in",  
-    secureConnection: true,
-    port: 465,
-    auth: {
-      user: 'info@pharmmaex.com',
-      pass: '6h.gRlwx'
+  host: "smtp.zoho.in",
+  secureConnection: true,
+  port: 465,
+  auth: {
+    user: "info@pharmmaex.com",
+    pass: "6h.gRlwx",
+  },
+});
+
+// ------------------- PAYMENT APIS ------------------- //
+// 1️⃣ Create Order API
+app.post("/create-order", async (req, res) => {
+  try {
+    const { amount, name, email, phone, cart } = req.body;
+
+    const options = {
+      amount: amount * 100, // in paise
+      currency: "INR",
+      receipt: "order_rcptid_" + Math.floor(Math.random() * 10000),
+    };
+
+    const order = await razorpay.orders.create(options);
+
+    // save in DB
+    const payment = new Payment({
+      orderId: order.id,
+      name,
+      email,
+      phone,
+      amount,
+      currency: "INR",
+      status: "created",
+      cart,
+    });
+
+    await payment.save();
+
+    res.json({ orderId: order.id, amount: options.amount, currency: "INR" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send(err);
+  }
+});
+
+// 2️⃣ Verify Payment API
+app.post("/verify-payment", async (req, res) => {
+  try {
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+      req.body;
+
+    const sign = razorpay_order_id + "|" + razorpay_payment_id;
+    const expectedSign = crypto
+      .createHmac("sha256", "uyZgcmhZ96qD2rNbV20uUsH3")
+      .update(sign.toString())
+      .digest("hex");
+
+    // console.log(razorpay_signature,'razorpay_signature');
+    // console.log(expectedSign,'expectedSign');
+
+    if (razorpay_signature === expectedSign) {
+      await Payment.findOneAndUpdate(
+        { orderId: razorpay_order_id },
+        {
+          paymentId: razorpay_payment_id,
+          signature: razorpay_signature,
+          status: "paid",
+        }
+      );
+      return res.json({
+        success: true,
+        message: "Payment verified successfully",
+      });
+    } else {
+      return res.json({ success: false, message: "Invalid signature" });
     }
-  });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send(err);
+  }
+});
+
+// ------------------- EMAIL APIS ------------------- //
 
 // API endpoint for sending emails
-app.post('/send-registration-mail', async (req, res) => {
-  const { firstName,lastName,email,phone,jobTitle,company,keyMail } = req.body;
-
- 
+app.post("/send-registration-mail", async (req, res) => {
+  const { firstName, lastName, email, phone, jobTitle, company, keyMail } =
+    req.body;
 
   const mailOptions = {
     from: "info@pharmmaex.com",
@@ -515,22 +613,40 @@ app.post('/send-registration-mail', async (req, res) => {
         </table>
       </body>
     </html>`,
-  }
+  };
 
   try {
     await transporter.sendMail(mailOptions);
-    res.status(200).json({ message: 'Email sent successfully!' });
+    res.status(200).json({ message: "Email sent successfully!" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Failed to send email' });
+    res.status(500).json({ error: "Failed to send email" });
   }
 });
 
-app.post('/send-exbitor-mail',upload.single("file"), async (req, res) => {
-  const { firstName,email,phone,jobTitle,company,companyAdd,city,state,pin,website,gst,Fascia,selectedPaymentMode,space,Sqrm,Charges,totalCharge,StallNo } = JSON.parse(req.body.jsonData);
+app.post("/send-exbitor-mail", upload.single("file"), async (req, res) => {
+  const {
+    firstName,
+    email,
+    phone,
+    jobTitle,
+    company,
+    companyAdd,
+    city,
+    state,
+    pin,
+    website,
+    gst,
+    Fascia,
+    selectedPaymentMode,
+    space,
+    Sqrm,
+    Charges,
+    totalCharge,
+    StallNo,
+  } = JSON.parse(req.body.jsonData);
   const bodyData = JSON.parse(req.body.jsonData); // Parse the JSON string associated with the key 'jsonData'
   //console.log(bodyData); // Access the 'firstName' property from the parsed data
-  
 
   const file = req.file;
   const mailOptions = {
@@ -786,20 +902,19 @@ table tr td {
     
     </html>
     `,
-    attachments: file ? [{ filename: file.originalname, content: file.buffer }] : [],
-  }
+    attachments: file
+      ? [{ filename: file.originalname, content: file.buffer }]
+      : [],
+  };
 
   try {
     await transporter.sendMail(mailOptions);
-    res.status(200).json({ message: 'Email sent successfully!', });
+    res.status(200).json({ message: "Email sent successfully!" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Failed to send email' });
+    res.status(500).json({ error: "Failed to send email" });
   }
-
 });
-
-
 
 app.post("/extra-product-list", async (req, res) => {
   const {
@@ -877,7 +992,10 @@ app.post("/extra-product-list", async (req, res) => {
                 </thead>
                 <tbody>
   ${Object.entries(productTable)
-    .map(([name, qty]) => `<tr><td style="color: ##fff;">${name}</td><td style="color: ##fff;">${qty}</td></tr>`)
+    .map(
+      ([name, qty]) =>
+        `<tr><td style="color: ##fff;">${name}</td><td style="color: ##fff;">${qty}</td></tr>`
+    )
     .join("")}
 </tbody>
 
