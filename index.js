@@ -12,27 +12,30 @@ const app = express();
 
 const upload = multer();
 
-// app.use((req, res, next) => {
-//   res.setHeader("Access-Control-Allow-Origin", "https://pharmmaex.com");
-//   res.setHeader("Access-Control-Allow-Origin", "*");
-//   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-//   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-//   res.setHeader("Access-Control-Allow-Credentials", "true");
-//   next();
-// });
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "https://pharmmaex.com");
+  // res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  next();
+});
 
 // ✅ Middleware
-app.use(cors());
+// app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
 
 // ✅ MongoDB connection
 mongoose
   // .connect("mongodb://127.0.0.1:27017/pharmmaex", {
-  .connect("mongodb+srv://pharmmaex:NizmLk6z8rx1l5Yx@pharmmaex.nqjap2b.mongodb.net/pharmmaex", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(
+    "mongodb+srv://pharmmaex:NizmLk6z8rx1l5Yx@pharmmaex.nqjap2b.mongodb.net/pharmmaex",
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    }
+  )
   .then(() => console.log("✅ MongoDB connected"))
   .catch((err) => console.log("MongoDB Error:", err));
 
@@ -96,7 +99,7 @@ app.post("/verify-payment", async (req, res) => {
 
     const sign = razorpay_order_id + "|" + razorpay_payment_id;
     const expectedSign = crypto
-      .createHmac("sha256", "uyZgcmhZ96qD2rNbV20uUsH3")
+      .createHmac("sha256", "ye4Q5XBW3BYXLoQVfYsR0Y5t")
       .update(sign.toString())
       .digest("hex");
 
