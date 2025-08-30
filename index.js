@@ -1016,6 +1016,7 @@ app.post("/extra-product-list", async (req, res) => {
             .footer p { color: #fff; }
             .footer a { color: #73BF45; }
             .footer a:hover { color: #73BF45; }
+            .span-text { color: red; }
           </style>
         </head>
         <body>
@@ -1024,7 +1025,7 @@ app.post("/extra-product-list", async (req, res) => {
             <div class="header">
               <h1>Pharmmaex</h1>
               <h2>EXHIBITOR REQUIREMENTS PRODUCT’S LIST</h2>
-              <p>Thank you for your recent order.<span style="color:red;">Your order will be verified and processed soon.</span></p>
+              <p>Thank you for your recent order.<span class="span-text">Your order will be verified and processed soon.</span></p>
             </div>
 
             <div>
