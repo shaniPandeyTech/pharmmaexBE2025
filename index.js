@@ -1,7 +1,7 @@
 import express from "express";
-import Razorpay from "razorpay";
+// import Razorpay from "razorpay";
 import crypto from "crypto";
-import cors from "cors";
+// import cors from "cors";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import Payment from "./models/Payment.js";
@@ -15,7 +15,7 @@ const upload = multer();
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "https://pharmmaex.com");
   // res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST,PUT,  OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   res.setHeader("Access-Control-Allow-Credentials", "true");
   next();
@@ -29,21 +29,20 @@ app.use(bodyParser.json());
 // ✅ MongoDB connection
 mongoose
   // .connect("mongodb://127.0.0.1:27017/pharmmaex", {
-  .connect(
-    "mongodb+srv://pharmmaex:NizmLk6z8rx1l5Yx@pharmmaex.nqjap2b.mongodb.net/pharmmaex",
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    }
-  )
+    .connect(
+      "mongodb+srv://pharmmaex:NizmLk6z8rx1l5Yx@pharmmaex.nqjap2b.mongodb.net/pharmmaex",
+      {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => console.log("✅ MongoDB connected"))
   .catch((err) => console.log("MongoDB Error:", err));
 
 // ✅ Razorpay instance
-const razorpay = new Razorpay({
-  key_id: "rzp_test_R7z6dY1nMfTwQu", // replace with your key_id
-  key_secret: "ye4Q5XBW3BYXLoQVfYsR0Y5t", // replace with your key_secret
-});
+// const razorpay = new Razorpay({
+//   key_id: "rzp_test_R7z6dY1nMfTwQu", // replace with your key_id
+//   key_secret: "ye4Q5XBW3BYXLoQVfYsR0Y5t", // replace with your key_secret
+// });
 
 // Configure nodemailer transporter
 let transporter = nodemailer.createTransport({
@@ -62,69 +61,125 @@ app.post("/create-order", async (req, res) => {
   try {
     const { amount, name, email, phone, cart } = req.body;
 
-    const options = {
-      amount: amount * 100, // in paise
-      currency: "INR",
-      receipt: "order_rcptid_" + Math.floor(Math.random() * 10000),
-    };
-
-    const order = await razorpay.orders.create(options);
-
     // save in DB
+    const orderId =
+      "ORD-" +
+      Date.now() + // current timestamp
+      "-" +
+      crypto.randomBytes(4).toString("hex");
+
     const payment = new Payment({
-      orderId: order.id,
+      orderId,
       name,
       email,
       phone,
       amount,
       currency: "INR",
-      status: "created",
+      status: "pending",
       cart,
     });
 
     await payment.save();
 
-    res.json({ orderId: order.id, amount: options.amount, currency: "INR" });
+    res.json({ message: "Successfully created", status: 200 });
   } catch (err) {
     console.error(err);
     res.status(500).send(err);
   }
 });
 
-// 2️⃣ Verify Payment API
-app.post("/verify-payment", async (req, res) => {
+app.get("/orders", async (req, res) => {
   try {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
-      req.body;
+    const orders = await Payment.find().sort({ createdAt: -1 });
+    res.json({ success: true, orders });
+  } catch (error) {
+    res.status(500).json({ success: false, error: "Server error" });
+  }
+});
 
-    const sign = razorpay_order_id + "|" + razorpay_payment_id;
-    const expectedSign = crypto
-      .createHmac("sha256", "ye4Q5XBW3BYXLoQVfYsR0Y5t")
-      .update(sign.toString())
-      .digest("hex");
+app.post("/change-status", async (req, res) => {
+  try {
+    const { status } = req.body;
+    const { orderId } = req.body;
 
-    // console.log(razorpay_signature,'razorpay_signature');
-    // console.log(expectedSign,'expectedSign');
-
-    if (razorpay_signature === expectedSign) {
-      await Payment.findOneAndUpdate(
-        { orderId: razorpay_order_id },
-        {
-          paymentId: razorpay_payment_id,
-          signature: razorpay_signature,
-          status: "paid",
-        }
-      );
-      return res.json({
-        success: true,
-        message: "Payment verified successfully",
-      });
-    } else {
-      return res.json({ success: false, message: "Invalid signature" });
+    // Find the order first (using orderId, not _id)
+    const order = await Payment.findOne({ orderId });
+    if (!order) {
+      return res.status(404).json({ success: false, error: "Order not found" });
     }
-  } catch (err) {
-    console.error(err);
-    res.status(500).send(err);
+
+    // Prepare mail options (use order data)
+    const mailOptions = {
+      from: "info@pharmmaex.com",
+      to: order.email,
+      bcc: ["info@pharmmaex.com", "shivam.sharma@pharmmaex.com"],
+      subject: "PharmmaEx - Payment Received & Order Confirmed",
+      html: `<!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8" />
+          <title>Order Confirmation</title>
+          <style>
+            body { font-family: Arial, sans-serif; background: #f6f6f6; padding: 0; margin: 0; }
+            .container { max-width: 600px; margin: 20px auto; background: #fff; border-radius: 6px; overflow: hidden; }
+            .header { background: #73BF45; color: #fff; padding: 20px; text-align: center; font-size: 22px; font-weight: bold; }
+            .content { padding: 20px; }
+            .content p { font-size: 14px; line-height: 1.6; }
+            .highlight { color: #73BF45; font-weight: bold; }
+            .footer { text-align: center; padding: 15px; font-size: 12px; color: #888; }
+            table { border-collapse: collapse; width: 100%; margin-top: 15px; }
+            td { border: 1px solid #73BF45; padding: 8px; font-size: 13px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">PharmmaEx - Order Confirmed</div>
+            <div class="content">
+              <p>Hi <b>${order.name}</b>,</p>
+              <p>We are happy to inform you that we have <span class="highlight">received your payment</span>. Your order has been confirmed successfully ✅</p>
+              <p class="section-title">Exhibition Details:</p>
+              <p class="section-desc">
+                <strong>Date:</strong> 03–04 October, 2025<br/>
+                <strong>Time:</strong> 10am to 6:00pm<br/>
+                <strong>Venue:</strong> Bombay Exhibition Centre, Mumbai
+              </p>
+              <p>Here are your order details:</p>
+              <table>
+                <tr><td><b>Order ID</b></td><td>${order.orderId}</td></tr>
+                <tr><td><b>Amount Paid</b></td><td>₹${order.amount}</td></tr>
+                <tr><td><b>Status</b></td><td><span class="highlight">Confirmed</span></td></tr>
+              </table>
+
+               <p class="section-title">No Refund Policy</p>
+              <p class="section-desc">All registration fees are non-refundable. No refunds for cancellations or no-shows.</p>
+              
+              <p>Our team will process your order shortly. You will receive another update once your order is dispatched.</p>
+              <p>Thank you for shopping with <span class="highlight">PharmmaEx</span>.</p>
+              <p>Best Regards,<br/>PharmmaEx Team</p>
+            </div>
+            <div class="footer">© 2025 PharmmaEx. All rights reserved.</div>
+          </div>
+        </body>
+      </html>`,
+    };
+
+    // Try sending mail first
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log("Error sending mail:", error);
+      } else {
+        console.log("Mail sent:", info.response);
+      }
+    });
+
+    // If mail successful → update DB
+    order.status = status;
+    await order.save();
+
+    res.json({ success: true, order });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ success: false, error: "Server error" });
   }
 });
 
@@ -930,6 +985,8 @@ app.post("/extra-product-list", async (req, res) => {
     productTable = [],
     totalPrices = 0,
   } = req.body;
+
+  // console.log(totalPrices,'totalPrices');
 
   const mailOptions = {
     from: "info@pharmmaex.com",

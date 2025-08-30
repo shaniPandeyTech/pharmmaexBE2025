@@ -11,7 +11,7 @@ const PaymentSchema = new mongoose.Schema({
   amount: { type: Number },
   currency: { type: String, default: "INR" },
   cart: { type: Object },
-  status: { type: String, default: "created" }, // created, paid, failed
+  status: { type: String, default: "pending" },
   createdAt: { type: Date, default: Date.now },
 });
 
