@@ -29,12 +29,13 @@ app.use(bodyParser.json());
 // ✅ MongoDB connection
 mongoose
   // .connect("mongodb://127.0.0.1:27017/pharmmaex", {
-    .connect(
-      "mongodb+srv://pharmmaex:NizmLk6z8rx1l5Yx@pharmmaex.nqjap2b.mongodb.net/pharmmaex",
-      {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(
+    "mongodb+srv://pharmmaex:NizmLk6z8rx1l5Yx@pharmmaex.nqjap2b.mongodb.net/pharmmaex",
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    }
+  )
   .then(() => console.log("✅ MongoDB connected"))
   .catch((err) => console.log("MongoDB Error:", err));
 
@@ -1015,7 +1016,6 @@ app.post("/extra-product-list", async (req, res) => {
             .footer p { color: #fff; }
             .footer a { color: #73BF45; }
             .footer a:hover { color: #73BF45; }
-
           </style>
         </head>
         <body>
@@ -1024,7 +1024,7 @@ app.post("/extra-product-list", async (req, res) => {
             <div class="header">
               <h1>Pharmmaex</h1>
               <h2>EXHIBITOR REQUIREMENTS PRODUCT’S LIST</h2>
-              <p>Thank you for your recent order</p>
+              <p>Thank you for your recent order.<span style="color:red;">Your order will be verified and processed soon.</span></p>
             </div>
 
             <div>
