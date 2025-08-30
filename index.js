@@ -14,7 +14,7 @@ const upload = multer();
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "https://pharmmaex.com");
-  // res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST,PUT,  OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   res.setHeader("Access-Control-Allow-Credentials", "true");
@@ -28,10 +28,10 @@ app.use(bodyParser.json());
 
 // ✅ MongoDB connection
 mongoose
-  // .connect("mongodb://127.0.0.1:27017/pharmmaex", {
-    .connect(
-      "mongodb+srv://pharmmaex:NizmLk6z8rx1l5Yx@pharmmaex.nqjap2b.mongodb.net/pharmmaex",
-      {
+  .connect("mongodb://127.0.0.1:27017/pharmmaex", {
+    // .connect(
+    //   "mongodb+srv://pharmmaex:NizmLk6z8rx1l5Yx@pharmmaex.nqjap2b.mongodb.net/pharmmaex",
+    //   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -1015,7 +1015,6 @@ app.post("/extra-product-list", async (req, res) => {
             .footer p { color: #fff; }
             .footer a { color: #73BF45; }
             .footer a:hover { color: #73BF45; }
-
           </style>
         </head>
         <body>
@@ -1024,7 +1023,7 @@ app.post("/extra-product-list", async (req, res) => {
             <div class="header">
               <h1>Pharmmaex</h1>
               <h2>EXHIBITOR REQUIREMENTS PRODUCT’S LIST</h2>
-              <p>Thank you for your recent order</p>
+              <p>Thank you for your recent order.<span style="color: #D22B2B;">Your order will be verified soon.</span></p>
             </div>
 
             <div>
