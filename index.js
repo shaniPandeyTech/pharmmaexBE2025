@@ -14,7 +14,7 @@ const upload = multer();
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "https://pharmmaex.com");
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  // res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST,PUT,  OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   res.setHeader("Access-Control-Allow-Credentials", "true");
@@ -28,13 +28,14 @@ app.use(bodyParser.json());
 
 // ✅ MongoDB connection
 mongoose
-  .connect("mongodb://127.0.0.1:27017/pharmmaex", {
-    // .connect(
-    //   "mongodb+srv://pharmmaex:NizmLk6z8rx1l5Yx@pharmmaex.nqjap2b.mongodb.net/pharmmaex",
-    //   {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  // .connect("mongodb://127.0.0.1:27017/pharmmaex", {
+  .connect(
+    "mongodb+srv://pharmmaex:NizmLk6z8rx1l5Yx@pharmmaex.nqjap2b.mongodb.net/pharmmaex",
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    }
+  )
   .then(() => console.log("✅ MongoDB connected"))
   .catch((err) => console.log("MongoDB Error:", err));
 
