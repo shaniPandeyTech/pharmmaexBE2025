@@ -14,7 +14,7 @@ const upload = multer();
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "https://pharmmaex.com");
-  // res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST,PUT,  OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   res.setHeader("Access-Control-Allow-Credentials", "true");
@@ -140,9 +140,9 @@ app.post("/change-status", async (req, res) => {
               <p>We are happy to inform you that we have <span class="highlight">received your payment</span>. Your order has been confirmed successfully ✅</p>
               <p class="section-title">Exhibition Details:</p>
               <p class="section-desc">
-                <strong>Date:</strong> 03–04 October, 2025<br/>
+                <strong>Date:</strong> 20–21 February, 2026<br/>
                 <strong>Time:</strong> 10am to 6:00pm<br/>
-                <strong>Venue:</strong> Bombay Exhibition Centre, Mumbai
+                <strong>Venue:</strong> Codissia Trade Fair Complex Coimbatore, Tamil Nadu
               </p>
               <p>Here are your order details:</p>
               <table>
@@ -839,8 +839,8 @@ table tr td {
                     <div class="details">
                         <h3>Exhibition Details:</h3>
                         <p>
-                            <strong>Date & Time:</strong> [October 3rd–4th, 2025, 10.00 AM to 6.00 PM]<br>
-                            <strong>Venue & Address:</strong>  Bombay Exhibition Centre NESCO, Goregaon, Mumbai, Maharashtra 400063
+                            <strong>Date & Time:</strong> [February 20th–21th, 2026, 10.00 AM to 6.00 PM]<br>
+                            <strong>Venue & Address:</strong>  Codissia Trade Fair Complex Coimbatore, Tamil Nadu
                         </p>
             
                         <h3>Details:</h3>
@@ -1030,9 +1030,9 @@ app.post("/extra-product-list", async (req, res) => {
             <div>
               <p class="section-title">Exhibition Details:</p>
               <p class="section-desc">
-                <strong>Date:</strong> 03–04 October, 2025<br/>
+                <strong>Date:</strong> 20–21 February, 2026<br/>
                 <strong>Time:</strong> 10am to 6:00pm<br/>
-                <strong>Venue:</strong> Bombay Exhibition Centre, Mumbai
+                <strong>Venue:</strong> Codissia Trade Fair Complex Coimbatore, Tamil Nadu
               </p>
 
               <p class="section-title">Order Details:</p>
