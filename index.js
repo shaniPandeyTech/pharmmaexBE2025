@@ -140,7 +140,7 @@ app.post("/change-status", async (req, res) => {
               <p>We are happy to inform you that we have <span class="highlight">received your payment</span>. Your order has been confirmed successfully ✅</p>
               <p class="section-title">Exhibition Details:</p>
               <p class="section-desc">
-                <strong>Date:</strong> 20–21 February, 2026<br/>
+                <strong>Date:</strong> 20th – 21st February, 2026<br/>
                 <strong>Time:</strong> 10am to 6:00pm<br/>
                 <strong>Venue:</strong> Codissia Trade Fair Complex Coimbatore, Tamil Nadu
               </p>
@@ -593,8 +593,7 @@ app.post("/send-registration-mail", async (req, res) => {
                       
                             <p>You are now registered to take part in <b>PharmmaEx</b>.</p>
     
-                                <p>"Our in-person event, set to unfold at the No. 91/4, 102/3, Opp BEL Corporate Office, Hebbal Flyover, Veerannapalya Rd,
-                                Manayata Tech Park, Nagavara, Bengaluru, Karnataka 560024 from February 2nd   to February 3rd, 2024, will be complemented by an engaging online experience. Stay tuned for further details on this virtual aspect, coming your way shortly!"</p>
+                                <p>"Our in-person event, set to unfold at the Codissia Trade Fair Complex Coimbatore, Tamil Nadu  from February 20th to February 21st, 2026, will be complemented by an engaging online experience. Stay tuned for further details on this virtual aspect, coming your way shortly!"</p>
                           </td>
                         </tr>
                         <tr>
@@ -839,7 +838,7 @@ table tr td {
                     <div class="details">
                         <h3>Exhibition Details:</h3>
                         <p>
-                            <strong>Date & Time:</strong> [February 20th–21th, 2026, 10.00 AM to 6.00 PM]<br>
+                            <strong>Date & Time:</strong> [February 20th – 21st, 2026, 10.00 AM to 6.00 PM]<br>
                             <strong>Venue & Address:</strong>  Codissia Trade Fair Complex Coimbatore, Tamil Nadu
                         </p>
             
@@ -1030,7 +1029,7 @@ app.post("/extra-product-list", async (req, res) => {
             <div>
               <p class="section-title">Exhibition Details:</p>
               <p class="section-desc">
-                <strong>Date:</strong> 20–21 February, 2026<br/>
+                <strong>Date:</strong> 20th – 21st February, 2026<br/>
                 <strong>Time:</strong> 10am to 6:00pm<br/>
                 <strong>Venue:</strong> Codissia Trade Fair Complex Coimbatore, Tamil Nadu
               </p>
