@@ -34,7 +34,7 @@ mongoose
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-    }
+    },
   )
   .then(() => console.log("✅ MongoDB connected"))
   .catch((err) => console.log("MongoDB Error:", err));
@@ -140,9 +140,9 @@ app.post("/change-status", async (req, res) => {
               <p>We are happy to inform you that we have <span class="highlight">received your payment</span>. Your order has been confirmed successfully ✅</p>
               <p class="section-title">Exhibition Details:</p>
               <p class="section-desc">
-                <strong>Date:</strong> 20th – 21st February, 2026<br/>
+                <strong>Date:</strong> 3rd – 4th July, 2026<br/>
                 <strong>Time:</strong> 10am to 6:00pm<br/>
-                <strong>Venue:</strong> Codissia Trade Fair Complex Coimbatore, Tamil Nadu
+                <strong>Venue:</strong> Biswa Bangla Exhibition Centre, New Town, Kolkata, West Bengal
               </p>
               <p>Here are your order details:</p>
               <table>
@@ -593,7 +593,7 @@ app.post("/send-registration-mail", async (req, res) => {
                       
                             <p>You are now registered to take part in <b>PharmmaEx</b>.</p>
     
-                                <p>"Our in-person event, set to unfold at the Codissia Trade Fair Complex Coimbatore, Tamil Nadu  from February 20th to February 21st, 2026, will be complemented by an engaging online experience. Stay tuned for further details on this virtual aspect, coming your way shortly!"</p>
+                                <p>"Our in-person event, set to unfold at the Biswa Bangla Exhibition Centre, New Town, Kolkata, West Bengal  from 3rd to 4th July, 2026, will be complemented by an engaging online experience. Stay tuned for further details on this virtual aspect, coming your way shortly!"</p>
                           </td>
                         </tr>
                         <tr>
@@ -838,8 +838,8 @@ table tr td {
                     <div class="details">
                         <h3>Exhibition Details:</h3>
                         <p>
-                            <strong>Date & Time:</strong> [February 20th – 21st, 2026, 10.00 AM to 6.00 PM]<br>
-                            <strong>Venue & Address:</strong>  Codissia Trade Fair Complex Coimbatore, Tamil Nadu
+                            <strong>Date & Time:</strong> [3rd – 4th July, 2026, 10.00 AM to 6.00 PM]<br>
+                            <strong>Venue & Address:</strong>  Biswa Bangla Exhibition Centre, New Town, Kolkata, West Bengal
                         </p>
             
                         <h3>Details:</h3>
@@ -1029,9 +1029,9 @@ app.post("/extra-product-list", async (req, res) => {
             <div>
               <p class="section-title">Exhibition Details:</p>
               <p class="section-desc">
-                <strong>Date:</strong> 20th – 21st February, 2026<br/>
+                <strong>Date:</strong> 3rd – 4th July, 2026<br/>
                 <strong>Time:</strong> 10am to 6:00pm<br/>
-                <strong>Venue:</strong> Codissia Trade Fair Complex Coimbatore, Tamil Nadu
+                <strong>Venue:</strong> Biswa Bangla Exhibition Centre, New Town, Kolkata, West Bengal
               </p>
 
               <p class="section-title">Order Details:</p>
@@ -1053,7 +1053,7 @@ app.post("/extra-product-list", async (req, res) => {
   ${Object.entries(productTable)
     .map(
       ([name, qty]) =>
-        `<tr><td style="color: ##fff;">${name}</td><td style="color: ##fff;">${qty}</td></tr>`
+        `<tr><td style="color: ##fff;">${name}</td><td style="color: ##fff;">${qty}</td></tr>`,
     )
     .join("")}
 </tbody>
